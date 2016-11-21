@@ -3,8 +3,7 @@
 import java.rmi.RemoteException;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
-import java.util.Date;
-/**
+ /**
  *
  * @authors Group C 
  */

@@ -37,12 +37,14 @@ public class AllPlayers {
      * @param score
      */
     public void updatePlayersList(String playerName, int score) {
-
+      // find player from list
         Player player = this.findObjectByName(playerName);
+        // if plyer in nost found add it
         if (null == player) {
             player = new Player(playerName, score);
             this.playersList.add(player);
         } else {
+            //else remove the player object and add an updated one
             this.playersList.remove(player);
             this.playersList.add(player);
         }
