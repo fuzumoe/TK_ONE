@@ -15,66 +15,43 @@ import javax.swing.DefaultListModel;
  * @author Group C
  */
 public class MinionsController {
-
+    //server's stub From the RMI client
     private static IGameServer serverStub = null;
+    //cleint's stub From the RMI Client
     private static IGameClient clientStub = null;
+    // Specification of the object to be serialized and unserialized 
     private IGameClientImpl clientImpl = null;
-    private static DefaultListModel<String> data = null;
+    // the cleints  game view
     private MinionsView mainView;
+    // the clients login view
     private PlugInView pluginView;
-
+    /**
+    * Contructor :: constructs the Client side of the app
+    */
     public MinionsController() throws RemoteException {
           try {
+         //set the plugin view
          this.pluginView = new PlugInView(this);
+         // set the Game main view
          this.mainView = new MinionsView(this);
-
-              this.clientImpl = new IGameClientImpl();
-             clientStub = (IGameClient) UnicastRemoteObject.exportObject(clientImpl, 0);
-        
-            Registry reg = LocateRegistry.getRegistry(2005);
-            serverStub = (IGameServer) reg.lookup("IGame");
- 
-           this.clientImpl.setMinionsController(this);
-           this.pluginView.setVisible(true);
-        
-         
+         // clients stub of the server
+         this.clientImpl = new IGameClientImpl();
+         // serialize and  prepare to push object to RMI server
+         clientStub = (IGameClient) UnicastRemoteObject.exportObject(clientImpl, 0);
+        //RMI registry object
+         Registry reg = LocateRegistry.getRegistry(2005);
+        //look up for RMI server
+         serverStub = (IGameServer) reg.lookup("IGame");
+         //set the controller for the RMI server to contact to
+         this.clientImpl.setMinionsController(this);
+         //set the plugin view visible
+         this.pluginView.setVisible(true);
        } catch (Exception e) {
             System.err.println("Client exception thrown: " + e.toString());
-             e.printStackTrace();
+           e.printStackTrace();
         }
     }
 
-
-    /* =================================================================*/
-
-    /**
-     ******************* RMI GETTERS AND SETTERS *********************
-     */
-    /* 
-     /* ==============================================================*/
-    public static IGameServer getServerStub() {
-        return serverStub;
-    }
-
-    public static IGameClient getClientStub() {
-        return clientStub;
-    }
-
-    public IGameClientImpl getClientImpl() {
-        return clientImpl;
-    }
-
-    public static void setServerStub(IGameServer serverStub) {
-        MinionsController.serverStub = serverStub;
-    }
-
-    public static void setClientStub(IGameClient clientStub) {
-        MinionsController.clientStub = clientStub;
-    }
-
-    public void setClientImpl(IGameClientImpl clientImpl) {
-        this.clientImpl = clientImpl;
-    }
 
     /* =================================================================*/
     /**
@@ -82,29 +59,14 @@ public class MinionsController {
      */
     /* 
      /* =================================================================*/
+     /**
+     * Set coordinates of minion in the JFrame
+     */
     public void setMinionCordinates(Coordinates coordinates) {
         this.mainView.getMinionLabel().setLocation(coordinates.getX(), coordinates.getY());
     }
 
-    public DefaultListModel<String> updateAndGetListModel() {
-        if (this.data == null) {
-            data = new DefaultListModel<String>();
-        }
-        data.clear();
-        data.addElement("");
-        try {
-            if (null != this.clientImpl.getGameData()) {
-                if (null != this.clientImpl.getGameData().getPlayers()) {
-                    for (Player info : this.clientImpl.getGameData().getPlayers().getPlayersList()) {
-                        data.addElement(info.getPlayerName() + " : " + info.getPlayerScore());
-                    }
-                }
-            }
-        } catch (NullPointerException e) {
-
-        }
-        return data;
-    }
+ 
 
     /**
      * set players nick name

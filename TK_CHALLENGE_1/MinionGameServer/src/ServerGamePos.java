@@ -18,13 +18,14 @@ public class ServerGamePos {
     private List<Coordinates> minionPriviuosPosition;
     //constructor
     private ServerGamePos() {
-        this.posSize = new Coordinates(200, 200);
+        this.posSize = new Coordinates(400, 450);
         this.minionPriviuosPosition = new ArrayList<Coordinates>();
         minionPriviuosPosition.add(generateRandomeMinionPos());
     }
+    
     /**
      * 
-     * @return static reference of this class
+     * @return :: static reference of this class
      */
     public static ServerGamePos getInstance() {
         // if no instance  of this class exists create one
@@ -33,7 +34,7 @@ public class ServerGamePos {
     }
     /**
      * 
-     * @return current minion position
+     * @return :: current minion position
      */
     public Coordinates generateRandomeMinionPos() {
          // random number object
@@ -46,28 +47,28 @@ public class ServerGamePos {
     }
     /**
      * return coordinates position
-     * @return posSize
+     * @return :: posSize
      */
     public Coordinates getGridSize() {
         return posSize;
     }
     /**
-     * set coordinates position
-     * @param gridSize 
+     * 
+     * @param gridSize ::set coordinates position
      */
     public void setGridSize(Coordinates gridSize) {
         this.posSize = gridSize;
     }
     /**
-     * return current minion position
-     * @return currentMinionPosition
+     * 
+     * @return :: current minion position
      */
     public Coordinates getCurrentMinionPosition() {
         return currentMinionPosition;
     }
     /**
-     * set current minion position
-     * @param currentMinionPosition 
+     * 
+     * @param :: set current minion position
      */
     public void setCurrentMinionPosition(Coordinates currentMinionPosition) {
         this.currentMinionPosition = currentMinionPosition;

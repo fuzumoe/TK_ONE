@@ -3,14 +3,10 @@
     <editor-bookmarks xmlns="http://www.netbeans.org/ns/editor-bookmarks/2" lastBookmarkId="0"/>
     <open-files xmlns="http://www.netbeans.org/ns/projectui-open-files/2">
         <group>
-            <file>file:/home/tk1/NetbeansPrj/MinionGameClient/src/GameDI.java</file>
-            <file>file:/home/tk1/NetbeansPrj/MinionGameClient/src/PlugInView.java</file>
-            <file>file:/home/tk1/NetbeansPrj/MinionGameClient/src/Player.java</file>
-            <file>file:/home/tk1/NetbeansPrj/MinionGameClient/src/MinionsView.java</file>
-            <file>file:/home/tk1/NetbeansPrj/MinionGameClient/src/IGameClient.java</file>
-            <file>file:/home/tk1/NetbeansPrj/MinionGameClient/src/Main.java</file>
-            <file>file:/home/tk1/NetbeansPrj/MinionGameClient/src/AllPlayers.java</file>
-            <file>file:/home/tk1/NetbeansPrj/MinionGameClient/src/IGameClientImpl.java</file>
+            <file>file:/home/tk1/git/TK_ONE/TK_CHALLENGE_1/MinionGameClient/src/PlugInView.java</file>
+            <file>file:/home/tk1/git/TK_ONE/TK_CHALLENGE_1/MinionGameClient/src/Player.java</file>
+            <file>file:/home/tk1/git/TK_ONE/TK_CHALLENGE_1/MinionGameClient/src/MinionsController.java</file>
+            <file>file:/home/tk1/git/TK_ONE/TK_CHALLENGE_1/MinionGameClient/src/MinionsView.java</file>
         </group>
     </open-files>
 </project-private>

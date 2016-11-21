@@ -161,7 +161,9 @@ public class MinionsView extends javax.swing.JFrame {
 
     
 
-
+/**
+*   Output stream writer class  to write out all system in to JTextArea
+*/
 class CustomOutputStream extends OutputStream{
     
     private JTextArea textArea;
