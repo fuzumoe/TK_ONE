@@ -7,10 +7,13 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.io.PrintStream;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
+import java.util.Locale;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.swing.JFrame;
@@ -51,14 +54,14 @@ public class SOAPGui extends JFrame {
     private final PrintStream printStream;
     BufferedReader reader;
     public SOAPCleint soap;
-    private String[][] data;
+    private Object[][] data;
     private String[] columns;
     private final Timer timer = null;
     private String ResponseForOrder="Error! please correct your procedure";
-
+    public SimpleDateFormat df;
     public SOAPGui() throws IOException {
 
-        data = new String[][]{};
+        data = new Object[][]{};
         columns = new String[]{"ID", "Room","Bonus", "Price","Avail. Amount","Avail. Date", "Reserv. Date","Amount"};
         modeljTable1 = new DefaultTableModel(data, columns);
 
@@ -94,7 +97,8 @@ public class SOAPGui extends JFrame {
         jTable3.getTableHeader().setReorderingAllowed(false);
        orders =  new ArrayList<Order>();
         constructRoomsTable();
-
+      df = new SimpleDateFormat("EE MMM dd HH:mm:ss z yyyy",
+                Locale.ENGLISH);
     }
 
     public String getUserMe() {
@@ -109,12 +113,10 @@ public class SOAPGui extends JFrame {
            modeljTable1.setRowCount(0);
         rooms = Arrays.asList(soap.remote.getAllRooms());
 
-           for(Room room : rooms)
-          modeljTable1.addRow(new String[]{ room.getId()+ "", room.getRoom(),
-                                            room.getAdditionalService(),room.getPrice() + "",
-                                            room.getAmount() + "",room.getAvailable()+ "",
-                                           "",""});
-
+        for(Room room : rooms)
+          modeljTable1.addRow(new Object[]{ room.getId()       + "", room.getRoom(),
+                                            room.getAdditionalService(),room.getPrice()    + "",
+                                            room.getAmount() + "",room.getAvailable()+ "", new Date(),""});
         modeljTable1.addRow(new String[]{"", "", "", "", "", "", "",""});
 
     }
@@ -124,7 +126,22 @@ public class SOAPGui extends JFrame {
         model.setRowCount(0);
 
     }
-
+  /**
+     * 
+     * @param resDates
+     * @param aviDate
+     * @return
+     * @throws ParseException 
+     */
+    public boolean isValidReserveDate(String resDates,String aviDate) throws ParseException{
+       boolean isValid = false;
+       if(!"".equals(resDates) ||(resDates != null) ) 
+           if(((Date) df.parse(resDates)).after(((Date) df.parse(aviDate)))
+            || ((Date) df.parse(resDates)).equals(((Date) df.parse(aviDate)))) 
+                  isValid = true; 
+       return isValid;
+    }
+    
     public void refresh() {
 
     
@@ -369,18 +386,19 @@ public class SOAPGui extends JFrame {
         try {
 
             int index = jTable1.getSelectedRow();
-//    private String room,adiServ,resDate,availDate;
-
-
+ 
             amount = new Integer(modeljTable1.getValueAt(index, 7).toString());
-            price = new Double(modeljTable1.getValueAt(index, 3).toString());
-            room = modeljTable1.getValueAt(index, 1).toString();
-            resDate = modeljTable1.getValueAt(index, 6).toString();
+            availDate =  modeljTable1.getValueAt(index, 5).toString();
+            resDate =  modeljTable1.getValueAt(index, 6).toString();
+  
+             price = new Double(modeljTable1.getValueAt(index,3).toString());
+             room = modeljTable1.getValueAt(index, 1).toString();
             int available = new Integer(modeljTable1.getValueAt(index, 4).toString());
+            
             boolean isInt = isNumber(amount + "");
             
             
-            if (amount > 0 && isInt == true && amount <= available) {
+            if (amount > 0 && isInt == true && amount <= available && isValidReserveDate(resDate,availDate)) {
                 available -= amount;
                 modeljTable1.setValueAt(available, index, 4);
                 boolean match = false;
@@ -492,7 +510,7 @@ public class SOAPGui extends JFrame {
     private void jButton4ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton4ActionPerformed
           changeCursor(Cursor.WAIT_CURSOR);
          int rows = modeljTable3.getRowCount();
-           System.out.println(rows);
+            
            
          for(int i = 0; i < rows; i++){
              room = modeljTable3.getValueAt(i,0).toString();
@@ -538,14 +556,16 @@ public class SOAPGui extends JFrame {
               int index  = jTable1.getSelectedRow();
 
       amount = new Integer(modeljTable1.getValueAt(index, 7).toString());
-
-            price = new Double(modeljTable1.getValueAt(index, 3).toString());
-            room = modeljTable1.getValueAt(index, 1).toString();
+            availDate =  modeljTable1.getValueAt(index, 5).toString();
+            resDate =  modeljTable1.getValueAt(index, 6).toString();
+  
+             price = new Double(modeljTable1.getValueAt(index,3).toString());
+             room = modeljTable1.getValueAt(index, 1).toString();
             int available = new Integer(modeljTable1.getValueAt(index, 4).toString());
-            System.out.println(available+"********AVI********");
+            
             boolean isInt = isNumber(amount + "");
             
-            if (amount > 0 && isInt == true && amount <= available) {
+            if (amount > 0 && isInt == true && amount <= available && isValidReserveDate(resDate,availDate)) {
                 available -= amount;
                 modeljTable1.setValueAt(available, index, 4);
                 boolean match = false;

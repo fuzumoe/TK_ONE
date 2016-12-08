@@ -88,6 +88,7 @@ public class ServerGUI extends JFrame  {
     private int id;
     private String room;
     private Date resDate;
+    private String additionalService;
     private double price;
     private int amount;
     
@@ -116,7 +117,7 @@ public class ServerGUI extends JFrame  {
          data = new String [][]{};
    
  
-         columns = new String [] {"ID","Room", "Price", "Amount","Avai. Date " };
+         columns = new String [] {"ID","Room", "Price", "Amount","Avai. Date ","Additional Service" };
          
          modeljTable1 =  new DefaultTableModel(data, columns);
          
@@ -181,7 +182,8 @@ public class ServerGUI extends JFrame  {
              
            modeljTable1.addRow(new String[]{room.getId()+"",room.getRoom(), 
                                          room.getPrice()+"",room.getAmount()+"",
-                                         room.getStringFromDate(room.getDateFromString(room.getAvailable()))+""});
+                                         room.getStringFromDate(room.getDateFromString(room.getAvailable()))+"",
+                                         room.getAdditionalService()+""});
 
           }
      
@@ -194,41 +196,21 @@ public class ServerGUI extends JFrame  {
           
          modeljTable2.setRowCount(0);
         users = rep.getUsersRepository().getAllUsers();
-             for(User user: users){
+             for(User user: users)
               modeljTable2.addRow(new String[]{user.getFullName(),user.getUserName(),user.getUserPassword()});
 
-             }
-//        for(int i = 0; i < users.size(); i++){
-//            fullName = users.get(i).getFullName();
-//            userName = users.get(i).getUserName();
-//            userPassword = users.get(i).getUserPassword();
-//           modeljTable2.addRow(new String[]{fullName,userName,userPassword});
-//             
-//        }
-        
+  
     }
     public void constructOrdersTable(){
 
        modeljTable3.setRowCount(0);
         orders = rep.getOrdersRepository().getAllOrders();
         
-        for(Order order :orders){
+        for(Order order :orders)
           modeljTable3.addRow(new String[]{order.getRoom(),order.getAmount()+"",
                                            order.getCoast()+"",order.getOrderer(),order.getReserveDate()});
    
-        }
-//       for(int i = 0; i < orders.size(); i++){
-//        
-//          orticket = orders.get(i).getRoom();
-//          orderer = orders.get(i).getOrderer();
-//          oramount = orders.get(i).getAmount();
-//          orcoast =  orders.get(i).getCoast();
-//           
-//         
-//        modeljTable3.addRow(new String[]{orticket,oramount+"",orcoast+"",orderer});
-//         
-//       }
-            
+      
         
     }
     
@@ -559,10 +541,12 @@ public class ServerGUI extends JFrame  {
        room = modeljTable1.getValueAt(index, 1).toString();
        price = new Double(modeljTable1.getValueAt(index, 2).toString());
        amount = new Integer(modeljTable1.getValueAt(index, 3).toString());
-        resDate = (Date) modeljTable1.getValueAt(index, 4);
+       resDate = (Date) modeljTable1.getValueAt(index, 4);
+       additionalService = modeljTable1.getValueAt(index, 5).toString();
        System.err.println(modeljTable1.getValueAt(index, 4).getClass().toString());
 //    rep.getRoomsRepository().getAllRooms().add(new Room(index+1,ticket,amount,price));
-        rep.getRoomsRepository().getAllRooms().add( new Room(room,amount,price,resDate.toString(),"",id +1));
+        rep.getRoomsRepository().getAllRooms().add( new Room(room,amount,price,resDate.toString(),additionalService,id +1));
+//    public Room(String room, int amount, double price, String available, String additionalService, int id) {
 
 //      Room(String room, int amount, double price, Date available, String additionalService, int id) {
          modeljTable1.removeRow(index);

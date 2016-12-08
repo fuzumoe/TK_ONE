@@ -9,10 +9,13 @@ import java.io.InputStreamReader;
 import java.io.OutputStream;
 
 import java.io.PrintStream;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 
 import java.util.List;
+import java.util.Locale;
 
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -56,13 +59,14 @@ public class RESTGui extends JFrame {
     public  String userMe;
     private PrintStream printStream;
     public  BufferedReader reader;
-    private String[][] data;
+    private Object[][] data;
     private String[] columns;
    
-
+   public SimpleDateFormat df;
     public RESTGui() throws IOException {
-
-        data = new String[][]{};
+  df = new SimpleDateFormat("EE MMM dd HH:mm:ss z yyyy",
+                Locale.ENGLISH);
+        data = new Object[][]{};
 
         columns = new String[]{"ID", "Room","Bonus", "Price","Avail. Amount","Avail. Date", "Reserv. Date","Amount"};
         modeljTable1 = new DefaultTableModel(data, columns);
@@ -97,31 +101,44 @@ public class RESTGui extends JFrame {
         constructRoomsTable();
 
     }
-
+   /**
+    * 
+    * @return 
+    */
     public String getUserMe() {
         return userMe;
     }
-
+    /**
+     * 
+     * @param userMe 
+     */
     public void setUserMe(String userMe) {
         this.userMe = userMe;
     }
-
+    
     public void constructRoomsTable() {
      modeljTable1.setRowCount(0);
         rooms = rest.getTicketsList();
         System.out.println("*********************");
-       System.out.println(rooms.toString());    
-       System.out.println("*********************");
+        System.out.println(rooms.toString());    
+        System.out.println("*********************");
 
         for(Room room : rooms)
-          modeljTable1.addRow(new String[]{ room.getId()       + "", room.getRoom(),
+          modeljTable1.addRow(new Object[]{ room.getId()       + "", room.getRoom(),
                                             room.getAdditionalService(),room.getPrice()    + "",
-                                            room.getAmount() + "",room.getAvailable()+ "", "",""});
+                                            room.getAmount() + "",room.getAvailable()+ "", new Date(),""});
         modeljTable1.addRow(new String[]{"", "", "", "", "", "", "",""});
     }
-
+    /**
+     * 
+     * @param model 
+     */
     public void clearTableModel(DefaultTableModel model) {model.setRowCount(0); }
-
+   /**
+    * 
+    * @param checkMe
+    * @return 
+    */
     public boolean isNumber(String checkMe) {
         boolean isInt = false;
         try {
@@ -133,8 +150,25 @@ public class RESTGui extends JFrame {
         return isInt;
     }
     
+    /**
+     * 
+     * @param resDates
+     * @param aviDate
+     * @return
+     * @throws ParseException 
+     */
+    public boolean isValidReserveDate(String resDates,String aviDate) throws ParseException{
+       boolean isValid = false;
+       if(!"".equals(resDates) ||(resDates != null) ) 
+           if(((Date) df.parse(resDates)).after(((Date) df.parse(aviDate)))
+            || ((Date) df.parse(resDates)).equals(((Date) df.parse(aviDate)))) 
+                  isValid = true; 
+       return isValid;
+    }
     
-   
+    /**
+     * refresh
+     */
     public void refresh() {
         clearTableModel(modeljTable1);
         constructRoomsTable();
@@ -375,14 +409,18 @@ public class RESTGui extends JFrame {
 
 
             amount = new Integer(modeljTable1.getValueAt(index, 7).toString());
+              resDate =  modeljTable1.getValueAt(index, 6).toString();
+//            resDate = new Room().getStringFromDate((Date) modeljTable1.getValueAt(index,6));
             price = new Double(modeljTable1.getValueAt(index, 3).toString());
             room = modeljTable1.getValueAt(index, 1).toString();
-            resDate = modeljTable1.getValueAt(index, 6).toString();
+             availDate= modeljTable1.getValueAt(index, 5).toString();
+             
+                 System.out.println(resDate);
             int available = new Integer(modeljTable1.getValueAt(index, 4).toString());
             boolean isInt = isNumber(amount + "");
             
-            
-            if (amount > 0 && isInt == true && amount <= available) {
+           
+            if (amount > 0 && isInt == true && amount <= available && isValidReserveDate(resDate,availDate)) {
                 available -= amount;
                 modeljTable1.setValueAt(available, index, 4);
                 boolean match = false;
@@ -397,7 +435,7 @@ public class RESTGui extends JFrame {
                     modeljTable3.setValueAt(tempamount,i, 2);
                     modeljTable3.setValueAt(tempprice,i, 1);
                   System.err.println("\n************************************************************");
-                  System.err.println("::" + amount + " Ticket/s of " + room + " updated in Cart::");
+                  System.err.println("::" + amount + " Room/s of " + room + " updated in Cart::");
                        break;
                       }
                 }
@@ -407,7 +445,7 @@ public class RESTGui extends JFrame {
                 price = new Double(modeljTable1.getValueAt(index, 3).toString()) * amount;
                 modeljTable3.addRow(new String[]{room, price + "", amount + "",resDate, userMe});
                 System.err.println("\n************************************************************");
-                System.err.println("::" + amount + " Ticket/s of " + room + " added to Cart::");
+                System.err.println("::" + amount + " Room/s of " + room + " added to Cart::");
                 }
                
                 }
@@ -440,7 +478,7 @@ public class RESTGui extends JFrame {
             }
 
             System.err.println("\n************************************************************");
-            System.err.println("::Ticket" + room + " removed from Cart::");
+            System.err.println("::Room " + room + " removed from Cart::");
         } catch (Exception e) {
         }
 
@@ -514,12 +552,12 @@ public class RESTGui extends JFrame {
              amount = orders.get(i).getAmount();
              price = orders.get(i).getCoast();
              
-             ResponseForOrder +="\n::Order for Ticket "+room +" "+amount+" in amount";
+             ResponseForOrder +="\n::Order for Room "+room +" "+amount+" in amount";
  
 
             orderStatus = rest.orderRoom(room, amount, price, userMe,resDate);
             if("false".equals(orderStatus)){
-                ResponseForOrder+=":-Not enough tickets to satisfy your oder";
+                ResponseForOrder+=":-Not enough Room to satisfy your oder";
             }
             else if("true".equals(orderStatus)){
                ResponseForOrder+=":-oder successfully submited";
@@ -544,17 +582,19 @@ public class RESTGui extends JFrame {
        changeCursor(Cursor.WAIT_CURSOR);
          try {
         if(evt.getKeyCode() == KeyEvent.VK_ENTER){
-              int index  = jTable1.getSelectedRow();
-
-      amount = new Integer(modeljTable1.getValueAt(index, 7).toString());
-
-            price = new Double(modeljTable1.getValueAt(index, 3).toString());
-            room = modeljTable1.getValueAt(index, 1).toString();
+            
+            int index  = jTable1.getSelectedRow();
+            amount = new Integer(modeljTable1.getValueAt(index, 7).toString());
+            availDate =  modeljTable1.getValueAt(index, 5).toString();
+            resDate =  modeljTable1.getValueAt(index, 6).toString();
+  
+             price = new Double(modeljTable1.getValueAt(index,3).toString());
+             room = modeljTable1.getValueAt(index, 1).toString();
             int available = new Integer(modeljTable1.getValueAt(index, 4).toString());
-            System.out.println(available+"********AVI********");
+            
             boolean isInt = isNumber(amount + "");
             
-            if (amount > 0 && isInt == true && amount <= available) {
+            if (amount > 0 && isInt == true && amount <= available && isValidReserveDate(resDate,availDate)) {
                 available -= amount;
                 modeljTable1.setValueAt(available, index, 4);
                 boolean match = false;
@@ -569,7 +609,7 @@ public class RESTGui extends JFrame {
                     modeljTable3.setValueAt(tempamount,i, 2);
                     modeljTable3.setValueAt(tempprice,i, 1);
                   System.err.println("\n************************************************************");
-                  System.err.println("::" + amount + " Ticket/s of " + room + " updated in Cart::");
+                  System.err.println("::" + amount + " Room/s of " + room + " updated in Cart::");
                        break;
                       }
                 }
@@ -579,7 +619,7 @@ public class RESTGui extends JFrame {
                 price = new Double(modeljTable1.getValueAt(index, 3).toString()) * amount;
                 modeljTable3.addRow(new String[]{room, price + "", amount + "", userMe});
                 System.err.println("\n************************************************************");
-                System.err.println("::" + amount + " Ticket/s of " + room + " added to Cart::");
+                System.err.println("::" + amount + " Room/s of " + room + " added to Cart::");
                 }
                
                 }
