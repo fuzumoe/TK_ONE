@@ -46,7 +46,7 @@ public class ServerGUI extends JFrame  {
       * Constants
       * ****************
      */
-    private final String searchUser = "Search for user";
+    private final String searchUser = "Search for user"; 
     private final String searchRoom = " Search for room";
     private final String searchOrders = "Search for Order";
     private final String searchOnlineUsers = "Search for  Online User";
@@ -560,7 +560,7 @@ public class ServerGUI extends JFrame  {
        price = new Double(modeljTable1.getValueAt(index, 2).toString());
        amount = new Integer(modeljTable1.getValueAt(index, 3).toString());
         resDate = (Date) modeljTable1.getValueAt(index, 4);
-       System.out.println(modeljTable1.getValueAt(index, 4).getClass().toString());
+       System.err.println(modeljTable1.getValueAt(index, 4).getClass().toString());
 //    rep.getRoomsRepository().getAllRooms().add(new Room(index+1,ticket,amount,price));
         rep.getRoomsRepository().getAllRooms().add( new Room(room,amount,price,resDate.toString(),"",id +1));
 
@@ -568,7 +568,7 @@ public class ServerGUI extends JFrame  {
          modeljTable1.removeRow(index);
          modeljTable1.addRow(new String[]{id+"",room,price+"", amount+""});
          System.err.println("\n************************************************************"); 
-         System.err.println("::Ticket "+room +" added::");
+         System.err.println("::Room "+room +" added::");
              timer.start();
             refresh=true;
            jButton11.setText(" Add Ticket");
@@ -576,7 +576,7 @@ public class ServerGUI extends JFrame  {
            timer.start();
                 }
         } catch (Exception e) {
-            System.out.println(e);
+            System.err.println(e);
         }
         
         changeCursor(Cursor.DEFAULT_CURSOR);
@@ -667,7 +667,7 @@ public class ServerGUI extends JFrame  {
              rep.getRoomsRepository().removeRoom(index);
             refresh();
             System.err.println("\n************************************************************");
-            System.err.println("\t::Ticket "+room +" removed::");
+            System.err.println("\t::Room "+room +" removed::");
             
                 refresh = true;
                 jButton12.setText("Remve Ticket");

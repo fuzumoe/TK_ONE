@@ -1,6 +1,5 @@
 package models;
 
-
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.Date;
@@ -13,23 +12,31 @@ import javax.xml.bind.annotation.XmlRootElement;
  */
 @XmlRootElement
 public class Room {
-    private int id;
-    private String room;
-    private int amount;
-    private double price;
-    private String available;
-    private String additionalService;    
+
+    private int id; //room Id
+    private String room; // room name
+    private int amount; // room amount
+    private double price; //room price
+    private String available; //room availablity date
+    private String additionalService;  // room additional services  
     DateFormat df;
 
-  
-  /**
-     *
+    /**
+     * Default Constructor
      */
     public Room() {
     }
 
- 
-
+    /**
+     * Variant constructor
+     *
+     * @param room
+     * @param amount
+     * @param price
+     * @param available
+     * @param additionalService
+     * @param id
+     */
     public Room(String room, int amount, double price, String available, String additionalService, int id) {
         this.room = room;
         this.amount = amount;
@@ -38,37 +45,41 @@ public class Room {
         this.additionalService = additionalService;
         this.id = id;
         df = new SimpleDateFormat("EE MMM dd HH:mm:ss z yyyy",
-                                            Locale.ENGLISH);
+                Locale.ENGLISH);
     }
 
+    /**
+     *
+     * @return
+     */
     public String getAdditionalService() {
         return additionalService;
     }
 
+    /**
+     *
+     * @param additionalService
+     */
     public void setAdditionalService(String additionalService) {
         this.additionalService = additionalService;
     }
-    
-    
-  
+
     /**
-     * 
-     * @return 
+     *
+     * @return
      */
     public String getAvailable() {
         return available;
     }
+
     /**
-     * 
-     * @param available 
+     *
+     * @param available
      */
     public void setAvailable(String available) {
         this.available = available;
     }
-    
-    
-         
-  
+
     /**
      *
      * @return
@@ -126,29 +137,44 @@ public class Room {
     public void setPrice(double price) {
         this.price = price;
     }
-    
-     public String getStringFromDate(Date dateInObject){
-     
-       return df.format(dateInObject);
-   }
-   public Date getDateFromString(String dateInString){
-          
-             Date dt =null ;
-          try{
-             dt = (Date) df.parse(dateInString); 
-          }catch(Exception e){
-              System.out.println(e.toString());
-          }
-       return  dt;
-   }
+
+    /**
+     *
+     * @param dateInObject
+     * @return
+     */
+    public String getStringFromDate(Date dateInObject) {
+
+        return df.format(dateInObject);
+    }
+
+    /**
+     *
+     * @param dateInString
+     * @return
+     */
+    public Date getDateFromString(String dateInString) {
+
+        Date dt = null;
+        try {
+            dt = (Date) df.parse(dateInString);
+        } catch (Exception e) {
+            System.out.println(e.toString());
+        }
+        return dt;
+    }
+   /**
+    * 
+    * @return 
+    */
     @Override
     public String toString() {
-        return "Id:"+getId()
-               +" Room :" + getRoom()
-               +" Price: "+getPrice()
-               +" Amount :" + getAmount()
-               +" Additional Service" +getAdditionalService()
-               +" Available Date:" + getAvailable()+ " ";
+        return "Id:" + getId()
+                + " Room :" + getRoom()
+                + " Price: " + getPrice()
+                + " Amount :" + getAmount()
+                + " Additional Service" + getAdditionalService()
+                + " Available Date:" + getAvailable() + " ";
     }
 
 }

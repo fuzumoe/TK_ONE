@@ -40,7 +40,7 @@ public interface OrdersRepository {
 
     /**
      *
-     * @param ticket
+     * @param room
      */
     void  removeOrderByName(String room);
 

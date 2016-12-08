@@ -9,9 +9,9 @@ import javax.xml.bind.annotation.XmlRootElement;
 @XmlRootElement
 public class User {
 
-    private String fullName;
-    private String userName;
-    private String userPassword;
+    private String fullName; // user full name
+    private String userName; // user name
+    private String userPassword; // user passowrd
 
     /**
      *
@@ -80,5 +80,15 @@ public class User {
     public void setFullName(String fullName) {
         this.fullName = fullName;
     }
+    /**
+     * 
+     * @return 
+     */
+    @Override
+    public String toString() {
+        return "User{" + "fullName=" + fullName + ", userName=" + userName + ", userPassword=" + userPassword + '}';
+    }
+    
+    
 
 }
