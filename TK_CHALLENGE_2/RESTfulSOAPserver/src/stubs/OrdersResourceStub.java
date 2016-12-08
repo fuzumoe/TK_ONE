@@ -56,9 +56,9 @@ public class OrdersResourceStub implements OrdersRepository {
      }
 
     @Override
-    public void removeOrderByTicket(String ticket) {
+    public void removeOrderByName(String room) {
          for(int i = 0; i < orders.size(); i++){
-            if(orders.get(i).getTicket().equals(ticket)){
+            if(orders.get(i).getRoom().equals(room)){
                orders.remove(orders.get(i));
             }
         }
@@ -66,8 +66,10 @@ public class OrdersResourceStub implements OrdersRepository {
     
 
     @Override
-     public void  order(String user,String ticket,int amount,double coust){
-            orders.add(new Order(ticket, user, amount, coust));
+     public void  order(String user,String room,int amount,double coust, String reserveDate){
+//             public Order(String room, String orderer, int amount, double coast, String reserveDate ) {
+
+            orders.add(new Order(room, user, amount, coust,reserveDate));
      }
     
     

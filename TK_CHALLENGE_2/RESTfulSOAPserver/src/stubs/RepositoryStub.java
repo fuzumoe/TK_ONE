@@ -11,10 +11,10 @@ import java.util.Date;
 import java.util.List;
 import javax.xml.bind.annotation.XmlRootElement;
 import models.Order;
-import models.Ticket;
+import models.Room;
 import models.User;
 import repositories.OrdersRepository;
-import repositories.TicketsRepository;
+import repositories.RoomsRepository;
 import repositories.UsersRepository;
 
 /**
@@ -28,10 +28,10 @@ public class RepositoryStub {
      * ***************************
      * Repositories **************
      */
-    private final   TicketsRepository ticketsRepository;
+    private final   RoomsRepository roomsRepository;
     private final   UsersRepository usersRepository;
     private final   OrdersRepository ordersRepository;
-    public static    RepositoryStub staticInstance = new RepositoryStub();
+    public static   RepositoryStub staticInstance = new RepositoryStub();
     /**
      * ***************************
      * USER RELATED VARIABLES ****
@@ -44,7 +44,7 @@ public class RepositoryStub {
      * ORDER RELATED VARIABLES ***
      */
     private final  List<Order> orders;
-    private final  List<Ticket> tickets;
+    private final  List<Room> rooms;
     private final  List<User> users;
     
                               
@@ -52,7 +52,7 @@ public class RepositoryStub {
     // temp variables to be used for future use
     public User temUser = null; 
     public boolean tempBool;
-    public  List<Ticket> tempTickets =null;
+    public  List<Room> tempTickets =null;
     
     
     /***
@@ -64,8 +64,8 @@ public class RepositoryStub {
      * 
     **/
     {
-             ticketsRepository
-            = TicketsResourcesStub.staticInstance;
+             roomsRepository
+            = RoomsResourcesStub.staticInstance;
        usersRepository
            = UserResourceStub.staicInstance;
      ordersRepository
@@ -75,9 +75,9 @@ public class RepositoryStub {
     public RepositoryStub() {
         
          orders = this.ordersRepository.getAllOrders();
-         tickets = this.ticketsRepository.getAllTickets();
+         rooms = this.roomsRepository.getAllRooms();
          users = this.usersRepository.getAllUsers();
-         tempTickets = tickets;
+         tempTickets = rooms;
          
          
     }
@@ -99,8 +99,8 @@ public class RepositoryStub {
         return ordersRepository;
     }
 
-    public TicketsRepository getTicketsRepository() {
-        return ticketsRepository;
+    public RoomsRepository getRoomsRepository() {
+        return roomsRepository;
     }
 
     public UsersRepository getUsersRepository() {
@@ -111,8 +111,8 @@ public class RepositoryStub {
         return users;
     }
     
-    public List<Ticket> getTickets() {
-        return tickets;
+    public List<Room> getRooms() {
+        return rooms;
     }
     public List<Order> getOrders() {
         return orders;
@@ -129,15 +129,6 @@ public class RepositoryStub {
     
     
     
-    
-    
-    
-    
-    
-    
-    
-    
-    
     /**
      * ***************************
      * MOCK METHODS **************
@@ -147,7 +138,7 @@ public class RepositoryStub {
      *
      * @return
      */
-    public List<Ticket> getMockTicketsList() {
+    public List<Room> getMockTicketsList() {
 
         tempTickets.get(0).setAmount(1);
         tempTickets.get(1).setAmount(2);

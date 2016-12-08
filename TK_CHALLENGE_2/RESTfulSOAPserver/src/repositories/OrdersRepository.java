@@ -42,7 +42,7 @@ public interface OrdersRepository {
      *
      * @param ticket
      */
-    void  removeOrderByTicket(String ticket);
+    void  removeOrderByName(String room);
 
     /**
      *
@@ -51,7 +51,7 @@ public interface OrdersRepository {
      * @param coust
      * @param user
      */
-    void  order(String user,String ticket,int amount,double coust);
+    void  order(String user,String room,int amount,double coust, String reserveDate);
 
  
     

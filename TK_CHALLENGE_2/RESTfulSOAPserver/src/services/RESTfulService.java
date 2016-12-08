@@ -7,7 +7,7 @@ import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
 import models.Order;
-import models.Ticket;
+import models.Room;
 import stubs.RepositoryStub;
 
 /**
@@ -42,32 +42,34 @@ public class RESTfulService {
         
         System.out.println("=>::Request[RESTful-Cleint]::..:checTicket.....:>>");
         System.out.println("=>::Response::.::..:checTicket..:Complteted::");
-        return repository.getTicketsRepository()
+        return repository.getRoomsRepository()
                          .checkAvailablity(ticketId, amount);
     }
     
     @GET
-    @Path("order/{ticket}/{amount}/{coast}/{user}")
+    @Path("order/{room}/{amount}/{coast}/{user}/{resdate}")
     @Produces({MediaType.APPLICATION_JSON,
         MediaType.APPLICATION_XML})
-    public boolean orderTicket(@PathParam("ticket") String ticket, 
+    public boolean orderRoom(@PathParam("room") String room, 
                                @PathParam("amount") int amount,
                                @PathParam("coast")double coast,
-                               @PathParam("user") String user) {
+                               @PathParam("user") String user,
+                               @PathParam("resdate") String resdate) {
     
         boolean check = true;
         System.out.println("=>::Request[RESTful-Cleint]::..:orderTicket in Progress.....:>>");
         
-         Ticket  tmp = repository.getTicketsRepository().getTicketByTicket(ticket);
+         Room  tmp = repository.getRoomsRepository().getRoomByName(room);
          System.out.println(tmp.getPrice());
-         int index = repository.getTicketsRepository().getAllTickets().indexOf(tmp);
+         int index = repository.getRoomsRepository().getAllRooms().indexOf(tmp);
          System.out.println(index);
-         int preAmount = repository.getTicketsRepository().getAllTickets().get(index).getAmount();
+         int preAmount = repository.getRoomsRepository().getAllRooms().get(index).getAmount();
          if(preAmount < amount){
              check = false;
          }else  if(preAmount >= amount){
-         repository.getTicketsRepository().getAllTickets().get(index).setAmount(preAmount-amount);
-         repository.getOrdersRepository().getAllOrders().add(new Order(ticket, user, amount, coast));
+         repository.getRoomsRepository().getAllRooms().get(index).setAmount(preAmount-amount);
+         repository.getOrdersRepository().getAllOrders().add(new Order(room, user, amount, coast,resdate));
+         
           check = true;
          }
        System.out.println("=>::Response::.::..:orderTicket..:Complteted::");
@@ -91,10 +93,11 @@ public class RESTfulService {
     @Path("/getAllTickets")
     @Produces({MediaType.APPLICATION_XML,
         MediaType.APPLICATION_JSON})
-    public List<Ticket> getAllTickets() {
+    public List<Room> getAllTickets() {
         System.out.println("=>::Request[RESTful-Cleint]::..:getAllTickets.....:>>");
         System.out.println("=>::Response::.::..:getAllTickets..:Complteted::");
-        return repository.getTicketsRepository().getAllTickets();
+        System.out.println(repository.getRoomsRepository().getAllRooms().toString());
+        return repository.getRoomsRepository().getAllRooms();
     }
 
     /**
@@ -106,11 +109,11 @@ public class RESTfulService {
     @Path("getTickets/{ticketId}")
     @Produces({MediaType.APPLICATION_XML,
         MediaType.APPLICATION_JSON})
-    public Ticket geckTicketById(@PathParam("ticketId") int ticket) {
+    public Room geckTicketById(@PathParam("ticketId") int ticket) {
 
         System.out.println("=>::Request[RESTful-Cleint]::..:getTicketById.....:>>");
         System.out.println("=>::Response::.::..:getTicketById..:Complteted::");
-        return repository.getTicketsRepository().getTicketByID(ticket);
+        return repository.getRoomsRepository().getRoomByID(ticket);
 
     }
 

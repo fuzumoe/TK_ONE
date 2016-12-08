@@ -5,7 +5,7 @@ package services;
 import javax.jws.WebService;
 import models.Order;
 
-import models.Ticket;
+import models.Room;
 import stubs.RepositoryStub;
 
 /**
@@ -44,19 +44,19 @@ public class SOAPImpl implements SOAPService {
      */
 
     @Override
-    public Ticket[] getAllTickets() {
+    public Room[] getAllRooms() {
         System.out.println("=>::Request[SOAP-Cleint]::..:getAllTickets.....:>>");
         System.out.println("=>::Response::.::..:getAllTickets..:Complteted::");
-        return repository.getTicketsRepository().getAllTickets().
-                toArray(new Ticket[repository.getTicketsRepository().getAllTickets().size()]);
+        return repository.getRoomsRepository().getAllRooms().
+                toArray(new Room[repository.getRoomsRepository().getAllRooms().size()]);
     }
 
 
     @Override
-    public boolean checTicket( int ticket, int amount) {
+    public boolean checTicket( int room, int amount) {
          System.out.println("=>::Request[SOAP-Cleint]::..:checTicket.....:>>");
          System.out.println("=>::Response::.::..:checTicket..:Complteted::");
-         return repository.getTicketsRepository().checkAvailablity(ticket, amount);
+         return repository.getRoomsRepository().checkAvailablity(room, amount);
     }
 //    
 
@@ -126,20 +126,20 @@ public class SOAPImpl implements SOAPService {
     }
 
     @Override
-    public boolean orderTicket(String ticket, int amount, double coast, String user) {
+    public boolean orderRoom(String ticket, int amount, double coast, String user, String resdate) {
         boolean check = true;
         System.out.println("=>::Request[RESTful-Cleint]::..:orderTicket in Progress.....:>>");
         
-         Ticket  tmp = repository.getTicketsRepository().getTicketByTicket(ticket);
+         Room  tmp = repository.getRoomsRepository().getRoomByName(ticket);
          System.out.println(tmp.getPrice());
-         int index = repository.getTicketsRepository().getAllTickets().indexOf(tmp);
+         int index = repository.getRoomsRepository().getAllRooms().indexOf(tmp);
          System.out.println(index);
-         int preAmount = repository.getTicketsRepository().getAllTickets().get(index).getAmount();
+         int preAmount = repository.getRoomsRepository().getAllRooms().get(index).getAmount();
          if(preAmount < amount){
              check = false;
          }else  if(preAmount >= amount){
-         repository.getTicketsRepository().getAllTickets().get(index).setAmount(preAmount-amount);
-         repository.getOrdersRepository().getAllOrders().add(new Order(ticket, user, amount, coast));
+         repository.getRoomsRepository().getAllRooms().get(index).setAmount(preAmount-amount);
+          repository.getOrdersRepository().getAllOrders().add(new Order(ticket, user, amount, coast,resdate));
           check = true;
          }
        System.out.println("=>::Response::.::..:orderTicket..:Complteted::");

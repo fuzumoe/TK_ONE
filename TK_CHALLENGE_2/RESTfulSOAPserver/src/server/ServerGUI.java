@@ -10,6 +10,7 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.io.PrintStream;
+import java.util.Date;
  
 import java.util.List;
  
@@ -22,12 +23,15 @@ import javax.swing.RowFilter;
  
 import javax.swing.Timer;
 import javax.swing.table.DefaultTableModel;
+import javax.swing.table.TableColumn;
 import javax.swing.table.TableModel;
 import javax.swing.table.TableRowSorter;
 import models.Order;
-import models.Ticket;
+import models.Room;
 import models.User;
+import org.jdesktop.swingx.table.DatePickerCellEditor;
 import stubs.RepositoryStub;
+
 
 /**
  *
@@ -43,7 +47,7 @@ public class ServerGUI extends JFrame  {
       * ****************
      */
     private final String searchUser = "Search for user";
-    private final String searchTicket = " Search for user";
+    private final String searchRoom = " Search for room";
     private final String searchOrders = "Search for Order";
     private final String searchOnlineUsers = "Search for  Online User";
     
@@ -62,7 +66,7 @@ public class ServerGUI extends JFrame  {
      * Repository Variables
      */
     private final   SOAPServer soapService; 
-    private List<Ticket>  tickets;
+    private List<Room>  rooms;
     private List<User> users;
     private List<Order> orders;
     private final Timer timer;
@@ -74,15 +78,16 @@ public class ServerGUI extends JFrame  {
     private final DefaultTableModel modeljTable1; 
     private final DefaultTableModel modeljTable2;
     private final DefaultTableModel modeljTable3;
-      private final  TableRowSorter<TableModel> rowSorterjTable1;
-      private final  TableRowSorter<TableModel> rowSorterjTable2 ;
-      private final  TableRowSorter<TableModel> rowSorterjTable3 ;
+    private final  TableRowSorter<TableModel> rowSorterjTable1;
+    private final  TableRowSorter<TableModel> rowSorterjTable2 ;
+    private final  TableRowSorter<TableModel> rowSorterjTable3 ;
           
     /**
      * Repository Entities Variables
      */
     private int id;
-    private String ticket;
+    private String room;
+    private Date resDate;
     private double price;
     private int amount;
     
@@ -99,30 +104,30 @@ public class ServerGUI extends JFrame  {
     
     private boolean refresh = true;
 
-    
-
-    
-         
-    
+   
     /**
      * Creates new form ServerGUI
      * @throws java.io.IOException
      */
     String[][]  data;
     String[] columns;
+    
     public ServerGUI() throws IOException {
          data = new String [][]{};
-        
-         columns = new String [] {"ID","Ticket", "Price", "Amount" };
+   
+ 
+         columns = new String [] {"ID","Room", "Price", "Amount","Avai. Date " };
+         
          modeljTable1 =  new DefaultTableModel(data, columns);
          
          columns = new String [] {"Name", "Username", "Password"};
          modeljTable2 = new DefaultTableModel(data, columns);
          
-         columns = new String [] {"Ticket", "Cost","Amount","Ordered By" };
+        columns= new String [] {"Room","Amount", "Cost","Res By","Res Date" };
          modeljTable3 = new DefaultTableModel(data, columns);
-        initComponents();
-          reader = new BufferedReader(new InputStreamReader(System.in));
+         initComponents();
+        
+         reader = new BufferedReader(new InputStreamReader(System.in));
          printStream = new PrintStream(new CustomOutputStream(jTextArea1));
          System.setOut(printStream);
          System.setErr(printStream);
@@ -131,7 +136,7 @@ public class ServerGUI extends JFrame  {
         resService = new  RESTfulService(); 
         soapService = new  SOAPServer();
         
-        tickets = rep.getTicketsRepository().getAllTickets();
+        rooms = rep.getRoomsRepository().getAllRooms();
         users = rep.getUsersRepository().getAllUsers();
         orders = rep.getOrdersRepository().getAllOrders();
  
@@ -145,14 +150,17 @@ public class ServerGUI extends JFrame  {
 //       
           
           jTable1.setRowSorter(rowSorterjTable1);
-             jTable2.setRowSorter(rowSorterjTable2);
+          jTable2.setRowSorter(rowSorterjTable2);
           jTable3.setRowSorter(rowSorterjTable3);
           
             jTable1.getTableHeader().setReorderingAllowed(false);
             jTable1.getTableHeader().setReorderingAllowed(false);
             jTable3.getTableHeader().setReorderingAllowed(false);
+            
+         TableColumn dataColumn = jTable1.getColumnModel().getColumn(4);
+         dataColumn.setCellEditor(new DatePickerCellEditor());
      
-         constructTicketsTable();
+         constructRoomsTable();
          constructUsersTable();
          constructOrdersTable();   
          
@@ -163,22 +171,19 @@ public class ServerGUI extends JFrame  {
     }
    
     
-    public void constructTicketsTable( ){
+    public void constructRoomsTable( ){
         
-         tickets = rep.getTicketsRepository().getAllTickets();
+         rooms = rep.getRoomsRepository().getAllRooms();
 
           modeljTable1.setRowCount(0);
-       for(int i = 0; i < tickets.size(); i++){
-          id = tickets.get(i).getId();
-         ticket = tickets.get(i).getTicket();
-         price = tickets.get(i).getPrice();
-         amount = tickets.get(i).getAmount();
-         modeljTable1.addRow(new String[]{id+"",ticket, price+"",amount+""});
           
-       }
-     
-          
-       
+          for(@SuppressWarnings("LocalVariableHidesMemberVariable")Room room: rooms){
+             
+           modeljTable1.addRow(new String[]{room.getId()+"",room.getRoom(), 
+                                         room.getPrice()+"",room.getAmount()+"",
+                                         room.getStringFromDate(room.getDateFromString(room.getAvailable()))+""});
+
+          }
      
     }
     
@@ -189,31 +194,40 @@ public class ServerGUI extends JFrame  {
           
          modeljTable2.setRowCount(0);
         users = rep.getUsersRepository().getAllUsers();
-      
-        for(int i = 0; i < users.size(); i++){
-            fullName = users.get(i).getFullName();
-            userName = users.get(i).getUserName();
-            userPassword = users.get(i).getUserPassword();
-           modeljTable2.addRow(new String[]{fullName,userName,userPassword});
-             
-        }
+             for(User user: users){
+              modeljTable2.addRow(new String[]{user.getFullName(),user.getUserName(),user.getUserPassword()});
+
+             }
+//        for(int i = 0; i < users.size(); i++){
+//            fullName = users.get(i).getFullName();
+//            userName = users.get(i).getUserName();
+//            userPassword = users.get(i).getUserPassword();
+//           modeljTable2.addRow(new String[]{fullName,userName,userPassword});
+//             
+//        }
         
     }
     public void constructOrdersTable(){
 
        modeljTable3.setRowCount(0);
         orders = rep.getOrdersRepository().getAllOrders();
-       for(int i = 0; i < orders.size(); i++){
         
-          orticket = orders.get(i).getTicket();
-          orderer = orders.get(i).getOrderer();
-          oramount = orders.get(i).getAmount();
-          orcoast =  orders.get(i).getCoast();
-           
-         
-        modeljTable3.addRow(new String[]{orticket,oramount+"",orcoast+"",orderer});
-         
-       }
+        for(Order order :orders){
+          modeljTable3.addRow(new String[]{order.getRoom(),order.getAmount()+"",
+                                           order.getCoast()+"",order.getOrderer(),order.getReserveDate()});
+   
+        }
+//       for(int i = 0; i < orders.size(); i++){
+//        
+//          orticket = orders.get(i).getRoom();
+//          orderer = orders.get(i).getOrderer();
+//          oramount = orders.get(i).getAmount();
+//          orcoast =  orders.get(i).getCoast();
+//           
+//         
+//        modeljTable3.addRow(new String[]{orticket,oramount+"",orcoast+"",orderer});
+//         
+//       }
             
         
     }
@@ -221,7 +235,7 @@ public class ServerGUI extends JFrame  {
     public void refresh(){
        
       constructOrdersTable();
-      constructTicketsTable();
+      constructRoomsTable();
       constructUsersTable();
      
     }
@@ -284,7 +298,7 @@ public class ServerGUI extends JFrame  {
             }
         });
 
-        jScrollPane3.setBorder(javax.swing.BorderFactory.createTitledBorder("Tickets Repository"));
+        jScrollPane3.setBorder(javax.swing.BorderFactory.createTitledBorder("Rooms Repository"));
 
         jTable1.setModel(modeljTable1
         );
@@ -347,7 +361,7 @@ public class ServerGUI extends JFrame  {
             .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel1Layout.createSequentialGroup()
                 .addContainerGap()
                 .addComponent(jTextField1, javax.swing.GroupLayout.PREFERRED_SIZE, 34, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                .addGap(40, 40, 40)
                 .addComponent(jButton14, javax.swing.GroupLayout.PREFERRED_SIZE, 37, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addGap(18, 18, 18)
                 .addComponent(jButton15, javax.swing.GroupLayout.PREFERRED_SIZE, 37, javax.swing.GroupLayout.PREFERRED_SIZE)
@@ -365,14 +379,14 @@ public class ServerGUI extends JFrame  {
         jTable3.setModel( modeljTable3 );
         jScrollPane8.setViewportView(jTable3);
 
-        jButton11.setText("Add Ticket");
+        jButton11.setText("Add Room");
         jButton11.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 jButton11ActionPerformed(evt);
             }
         });
 
-        jButton12.setText("Remve Ticket");
+        jButton12.setText("Remve Room");
         jButton12.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 jButton12ActionPerformed(evt);
@@ -380,7 +394,7 @@ public class ServerGUI extends JFrame  {
         });
 
         jTextField2.setHorizontalAlignment(javax.swing.JTextField.CENTER);
-        jTextField2.setText("Search for Ticket");
+        jTextField2.setText("Search for Room");
         jTextField2.addMouseListener(new java.awt.event.MouseAdapter() {
             public void mouseClicked(java.awt.event.MouseEvent evt) {
                 jTextField2MouseClicked(evt);
@@ -436,8 +450,8 @@ public class ServerGUI extends JFrame  {
                     .addComponent(jButton12, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                     .addComponent(jButton16, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                     .addComponent(jButton11, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                    .addComponent(jTextField3, javax.swing.GroupLayout.DEFAULT_SIZE, 253, Short.MAX_VALUE)
-                    .addComponent(jTextField2, javax.swing.GroupLayout.DEFAULT_SIZE, 253, Short.MAX_VALUE))
+                    .addComponent(jTextField3, javax.swing.GroupLayout.DEFAULT_SIZE, 283, Short.MAX_VALUE)
+                    .addComponent(jTextField2, javax.swing.GroupLayout.DEFAULT_SIZE, 283, Short.MAX_VALUE))
                 .addGap(13, 13, 13))
         );
         jPanel4Layout.setVerticalGroup(
@@ -474,13 +488,13 @@ public class ServerGUI extends JFrame  {
                     .addComponent(jScrollPane1)
                     .addGroup(layout.createSequentialGroup()
                         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addComponent(jScrollPane6, javax.swing.GroupLayout.DEFAULT_SIZE, 320, Short.MAX_VALUE)
-                            .addComponent(jScrollPane3, javax.swing.GroupLayout.DEFAULT_SIZE, 320, Short.MAX_VALUE))
+                            .addComponent(jScrollPane6, javax.swing.GroupLayout.DEFAULT_SIZE, 436, Short.MAX_VALUE)
+                            .addComponent(jScrollPane3, javax.swing.GroupLayout.DEFAULT_SIZE, 436, Short.MAX_VALUE))
                         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                             .addComponent(jPanel1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                             .addComponent(jPanel4, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
                         .addGap(0, 0, 0)
-                        .addComponent(jScrollPane8, javax.swing.GroupLayout.DEFAULT_SIZE, 312, Short.MAX_VALUE)))
+                        .addComponent(jScrollPane8, javax.swing.GroupLayout.DEFAULT_SIZE, 428, Short.MAX_VALUE)))
                 .addGap(0, 0, 0))
         );
         layout.setVerticalGroup(
@@ -494,22 +508,22 @@ public class ServerGUI extends JFrame  {
                             .addComponent(jScrollPane3, javax.swing.GroupLayout.PREFERRED_SIZE, 0, Short.MAX_VALUE))
                         .addGap(0, 0, 0)
                         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addComponent(jScrollPane6, javax.swing.GroupLayout.DEFAULT_SIZE, 162, Short.MAX_VALUE)
+                            .addComponent(jScrollPane6, javax.swing.GroupLayout.PREFERRED_SIZE, 0, Short.MAX_VALUE)
                             .addComponent(jPanel1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)))
                     .addGroup(layout.createSequentialGroup()
                         .addComponent(jScrollPane8, javax.swing.GroupLayout.PREFERRED_SIZE, 0, Short.MAX_VALUE)
                         .addGap(1, 1, 1)))
                 .addGap(0, 0, 0)
-                .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 82, Short.MAX_VALUE)
+                .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 223, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addGap(0, 0, 0))
         );
 
-        setSize(new java.awt.Dimension(920, 480));
+        setSize(new java.awt.Dimension(1176, 687));
         setLocationRelativeTo(null);
     }// </editor-fold>//GEN-END:initComponents
 
     private void jTextField2MouseExited(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jTextField2MouseExited
-        changeText(jTextField2,searchTicket);
+        changeText(jTextField2,searchRoom);
     }//GEN-LAST:event_jTextField2MouseExited
 
     private void jTextField2MouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jTextField2MouseClicked
@@ -541,16 +555,20 @@ public class ServerGUI extends JFrame  {
          }else if(refresh== false){
            
         int index = jTable1.getSelectedRow();
-        id = new Integer(modeljTable1.getValueAt(index,0).toString());
-       ticket = modeljTable1.getValueAt(index, 1).toString();
+        id = new Integer(modeljTable1.getValueAt(index-1,0).toString());
+       room = modeljTable1.getValueAt(index, 1).toString();
        price = new Double(modeljTable1.getValueAt(index, 2).toString());
        amount = new Integer(modeljTable1.getValueAt(index, 3).toString());
-      rep.getTicketsRepository().getAllTickets().add(new Ticket(index+1,ticket,amount,price));
-      
+        resDate = (Date) modeljTable1.getValueAt(index, 4);
+       System.out.println(modeljTable1.getValueAt(index, 4).getClass().toString());
+//    rep.getRoomsRepository().getAllRooms().add(new Room(index+1,ticket,amount,price));
+        rep.getRoomsRepository().getAllRooms().add( new Room(room,amount,price,resDate.toString(),"",id +1));
+
+//      Room(String room, int amount, double price, Date available, String additionalService, int id) {
          modeljTable1.removeRow(index);
-         modeljTable1.addRow(new String[]{id+"",ticket,price+"", amount+""});
+         modeljTable1.addRow(new String[]{id+"",room,price+"", amount+""});
          System.err.println("\n************************************************************"); 
-         System.err.println("::Ticket "+ticket +" added::");
+         System.err.println("::Ticket "+room +" added::");
              timer.start();
             refresh=true;
            jButton11.setText(" Add Ticket");
@@ -558,6 +576,7 @@ public class ServerGUI extends JFrame  {
            timer.start();
                 }
         } catch (Exception e) {
+            System.out.println(e);
         }
         
         changeCursor(Cursor.DEFAULT_CURSOR);
@@ -641,14 +660,14 @@ public class ServerGUI extends JFrame  {
                 
               int index = jTable1.getSelectedRow();
             id = new Integer(modeljTable1.getValueAt(index, 0).toString());
-            ticket = modeljTable1.getValueAt(index, 1).toString();
+            room = modeljTable1.getValueAt(index, 1).toString();
             price = new Double(modeljTable1.getValueAt(index, 2).toString());
             amount = new Integer(modeljTable1.getValueAt(index, 3).toString());
-            Ticket tempe  = new Ticket(id, ticket, amount, price);
-             rep.getTicketsRepository().removeTicket(index);
+//            Room tempe  = new Room(id, room, amount, price);
+             rep.getRoomsRepository().removeRoom(index);
             refresh();
             System.err.println("\n************************************************************");
-            System.err.println("\t::Ticket "+ticket +" removed::");
+            System.err.println("\t::Ticket "+room +" removed::");
             
                 refresh = true;
                 jButton12.setText("Remve Ticket");

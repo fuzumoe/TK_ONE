@@ -1,5 +1,9 @@
 package models;
 
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
+import java.util.Date;
+import java.util.Locale;
 import javax.xml.bind.annotation.XmlRootElement;
 
 /**
@@ -9,19 +13,34 @@ import javax.xml.bind.annotation.XmlRootElement;
 @XmlRootElement
 public class Order {
 
-    private String ticket;
+    private String room;
     private String orderer;
     private int amount;
     private double coast;
-
+    private String reserveDate;
+     DateFormat df;
+    
     public Order() {
     }
-
-    public Order(String ticket, String orderer, int amount, double coast) {
-        this.ticket = ticket;
+ 
+    
+    public Order(String room, String orderer, int amount, double coast, String reserveDate ) {
+        this.room = room;
         this.orderer = orderer;
         this.amount = amount;
         this.coast = coast;
+        this.reserveDate = reserveDate;
+        this.df = new SimpleDateFormat("EE MMM dd HH:mm:ss z yyyy",
+            Locale.ENGLISH);
+    }
+    
+   
+     public String getReserveDate() {
+        return reserveDate;
+    }
+
+    public void setReserveDate(String reserveDate) {
+        this.reserveDate = reserveDate;
     }
 
     public int getAmount() {
@@ -36,8 +55,8 @@ public class Order {
         return orderer;
     }
 
-    public String getTicket() {
-        return ticket;
+    public String getRoom() {
+        return room;
     }
 
     public void setAmount(int amount) {
@@ -52,8 +71,28 @@ public class Order {
         this.orderer = orderer;
     }
 
-    public void setTicket(String ticket) {
-        this.ticket = ticket;
+    public void setRoom(String room) {
+        this.room = room;
     }
+      public String getStringFromDate(Date dateInObject){
+     
+       return df.format(dateInObject);
+   }
+   public Date getDateFromString(String dateInString){
+          
+             Date dt =null ;
+          try{
+             dt = (Date) df.parse(dateInString); 
+          }catch(Exception e){
+              System.out.println(e.toString());
+          }
+       return  dt;
+   }
+
+    @Override
+    public String toString() {
+        return "Order{" + "room=" + room + ", orderer=" + orderer + ", amount=" + amount + ", coast=" + coast + ", reserveDate=" + reserveDate + '}';
+    }
+    
 
 }

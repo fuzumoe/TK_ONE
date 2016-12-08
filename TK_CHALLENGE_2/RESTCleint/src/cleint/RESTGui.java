@@ -1,4 +1,4 @@
-package cleint;
+ package cleint;
 
 import java.awt.Cursor;
 import java.awt.event.KeyEvent;
@@ -10,6 +10,7 @@ import java.io.OutputStream;
 
 import java.io.PrintStream;
 import java.util.ArrayList;
+import java.util.Date;
 
 import java.util.List;
 
@@ -23,11 +24,13 @@ import javax.swing.JTextField;
 import javax.swing.RowFilter;
 
 import javax.swing.table.DefaultTableModel;
+import javax.swing.table.TableColumn;
 import javax.swing.table.TableModel;
 import javax.swing.table.TableRowSorter;
 import models.Order;
 
-import models.Ticket;
+import models.Room;
+import org.jdesktop.swingx.table.DatePickerCellEditor;
 
 /**
  *
@@ -39,7 +42,7 @@ public class RESTGui extends JFrame {
     private final String searchTicket = " Search for user";
     private final String searchOrders = "Search for Order";
     public RESTCleint rest;
-    private List<Ticket> tickets;
+    private List<Room> rooms;
     private List<Order> orders;
     private String ResponseForOrder ="Error! please correct your procedure";
     private DefaultTableModel modeljTable1;
@@ -47,7 +50,7 @@ public class RESTGui extends JFrame {
     private TableRowSorter<TableModel> rowSorterjTable1;
     private TableRowSorter<TableModel> rowSorterjTable3;
     private int id;
-    private String ticket;
+    private String room,adiServ,resDate,availDate;
     private double price;
     private int amount;
     public  String userMe;
@@ -61,10 +64,10 @@ public class RESTGui extends JFrame {
 
         data = new String[][]{};
 
-        columns = new String[]{"ID", "Ticket", "Price", "Available", "Needed"};
+        columns = new String[]{"ID", "Room","Bonus", "Price","Avail. Amount","Avail. Date", "Reserv. Date"," Needed Amount"};
         modeljTable1 = new DefaultTableModel(data, columns);
 
-        columns = new String[]{"Ticket", "Cost", "Amount", "Ordered By"};
+        columns = new String[]{"Room", "Cost", "Amount", "Res. Date","Ordered By"};
         modeljTable3 = new DefaultTableModel(data, columns);
 
         initComponents();
@@ -78,7 +81,7 @@ public class RESTGui extends JFrame {
         System.out.println("***********************************");
         System.out.println(":....Service-Intiating....:");
         System.out.println("***********************************");
-        tickets = rest.getTicketsList();
+        rooms = rest.getTicketsList();
         orders =  new ArrayList<Order>();
         rowSorterjTable1 = new TableRowSorter<TableModel>(jTable1.getModel());
 
@@ -86,11 +89,12 @@ public class RESTGui extends JFrame {
         jTable1.setRowSorter(rowSorterjTable1);
 
         jTable3.setRowSorter(rowSorterjTable3);
-
+        TableColumn dataColumn = jTable1.getColumnModel().getColumn(6);
+         dataColumn.setCellEditor(new DatePickerCellEditor());
         jTable1.getTableHeader().setReorderingAllowed(false);
         jTable3.getTableHeader().setReorderingAllowed(false);
 
-        constructTicketsTable();
+        constructRoomsTable();
 
     }
 
@@ -102,26 +106,21 @@ public class RESTGui extends JFrame {
         this.userMe = userMe;
     }
 
-    public void constructTicketsTable() {
+    public void constructRoomsTable() {
      modeljTable1.setRowCount(0);
-        tickets = rest.getTicketsList();
+        rooms = rest.getTicketsList();
+        System.out.println("*********************");
+       System.out.println(rooms.toString());    
+       System.out.println("*********************");
 
-        for (int i = 0; i < tickets.size(); i++) {
-            id = tickets.get(i).getId();
-            ticket = tickets.get(i).getTicket();
-            price = tickets.get(i).getPrice();
-            amount = tickets.get(i).getAmount();
-            modeljTable1.addRow(new String[]{id + "", ticket, price + "", amount + "", ""});
-
-        }
-
+        for(Room room : rooms)
+          modeljTable1.addRow(new String[]{ room.getId()       + "", room.getRoom(),
+                                            room.getAdditionalService(),room.getPrice()    + "",
+                                            room.getAmount() + "",room.getAvailable()+ "", new Date()+"",""});
+        modeljTable1.addRow(new String[]{"", "", "", "", "", "", "",""});
     }
 
-    public void clearTableModel(DefaultTableModel model) {
-
-        model.setRowCount(0);
-
-    }
+    public void clearTableModel(DefaultTableModel model) {model.setRowCount(0); }
 
     public boolean isNumber(String checkMe) {
         boolean isInt = false;
@@ -133,10 +132,12 @@ public class RESTGui extends JFrame {
         }
         return isInt;
     }
-
+    
+    
+   
     public void refresh() {
         clearTableModel(modeljTable1);
-        constructTicketsTable();
+        constructRoomsTable();
 
     }
 
@@ -189,6 +190,11 @@ public class RESTGui extends JFrame {
         jScrollPane3.setBorder(javax.swing.BorderFactory.createTitledBorder("Available Tickets"));
 
         jTable1.setModel(modeljTable1);
+        jTable1.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                jTable1MouseClicked(evt);
+            }
+        });
         jTable1.addKeyListener(new java.awt.event.KeyAdapter() {
             public void keyReleased(java.awt.event.KeyEvent evt) {
                 jTable1KeyReleased(evt);
@@ -276,38 +282,30 @@ public class RESTGui extends JFrame {
             .addGroup(jPanel4Layout.createSequentialGroup()
                 .addGap(5, 5, 5)
                 .addGroup(jPanel4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addGroup(jPanel4Layout.createSequentialGroup()
-                        .addGroup(jPanel4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addComponent(jButton4, javax.swing.GroupLayout.PREFERRED_SIZE, 143, javax.swing.GroupLayout.PREFERRED_SIZE)
-                            .addComponent(jButton3, javax.swing.GroupLayout.PREFERRED_SIZE, 143, javax.swing.GroupLayout.PREFERRED_SIZE)
-                            .addComponent(jButton5, javax.swing.GroupLayout.PREFERRED_SIZE, 145, javax.swing.GroupLayout.PREFERRED_SIZE))
-                        .addGap(5, 5, 5))
-                    .addGroup(jPanel4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING, false)
-                        .addComponent(jTextField3, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, 145, Short.MAX_VALUE)
-                        .addComponent(jTextField2)
-                        .addComponent(jButton11, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))))
+                    .addComponent(jButton4, javax.swing.GroupLayout.DEFAULT_SIZE, 147, Short.MAX_VALUE)
+                    .addComponent(jButton3, javax.swing.GroupLayout.PREFERRED_SIZE, 147, Short.MAX_VALUE)
+                    .addComponent(jButton5, javax.swing.GroupLayout.PREFERRED_SIZE, 147, Short.MAX_VALUE)
+                    .addComponent(jTextField3, javax.swing.GroupLayout.DEFAULT_SIZE, 147, Short.MAX_VALUE)
+                    .addComponent(jTextField2, javax.swing.GroupLayout.Alignment.TRAILING)
+                    .addComponent(jButton11, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                .addGap(9, 9, 9))
         );
-
-        jPanel4Layout.linkSize(javax.swing.SwingConstants.HORIZONTAL, new java.awt.Component[] {jButton3, jButton4, jButton5});
-
         jPanel4Layout.setVerticalGroup(
             jPanel4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(jPanel4Layout.createSequentialGroup()
                 .addContainerGap()
-                .addComponent(jTextField3, javax.swing.GroupLayout.PREFERRED_SIZE, 34, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addComponent(jTextField3, javax.swing.GroupLayout.DEFAULT_SIZE, 51, Short.MAX_VALUE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                .addComponent(jTextField2, javax.swing.GroupLayout.PREFERRED_SIZE, 40, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addComponent(jTextField2, javax.swing.GroupLayout.DEFAULT_SIZE, 51, Short.MAX_VALUE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(jButton11, javax.swing.GroupLayout.PREFERRED_SIZE, 35, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addComponent(jButton11, javax.swing.GroupLayout.DEFAULT_SIZE, 51, Short.MAX_VALUE)
                 .addGap(10, 10, 10)
-                .addComponent(jButton3, javax.swing.GroupLayout.PREFERRED_SIZE, 37, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addComponent(jButton3, javax.swing.GroupLayout.DEFAULT_SIZE, 51, Short.MAX_VALUE)
                 .addGap(5, 5, 5)
-                .addComponent(jButton4, javax.swing.GroupLayout.PREFERRED_SIZE, 32, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                .addComponent(jButton5, javax.swing.GroupLayout.PREFERRED_SIZE, 40, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addComponent(jButton4, javax.swing.GroupLayout.DEFAULT_SIZE, 51, Short.MAX_VALUE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(jButton5, javax.swing.GroupLayout.DEFAULT_SIZE, 56, Short.MAX_VALUE))
         );
-
-        jPanel4Layout.linkSize(javax.swing.SwingConstants.VERTICAL, new java.awt.Component[] {jButton11, jButton3, jButton4, jButton5, jTextField2, jTextField3});
 
         jTextArea1.setBackground(new java.awt.Color(0, 0, 0));
         jTextArea1.setColumns(20);
@@ -323,12 +321,12 @@ public class RESTGui extends JFrame {
                 .addGap(0, 0, 0)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
-                        .addComponent(jScrollPane3, javax.swing.GroupLayout.DEFAULT_SIZE, 386, Short.MAX_VALUE)
+                        .addComponent(jScrollPane3, javax.swing.GroupLayout.DEFAULT_SIZE, 511, Short.MAX_VALUE)
                         .addGap(0, 0, 0)
                         .addComponent(jPanel4, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                         .addGap(0, 0, 0)
-                        .addComponent(jScrollPane8, javax.swing.GroupLayout.DEFAULT_SIZE, 292, Short.MAX_VALUE))
-                    .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 839, Short.MAX_VALUE))
+                        .addComponent(jScrollPane8, javax.swing.GroupLayout.DEFAULT_SIZE, 417, Short.MAX_VALUE))
+                    .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 1089, Short.MAX_VALUE))
                 .addGap(0, 0, 0))
         );
         layout.setVerticalGroup(
@@ -336,16 +334,14 @@ public class RESTGui extends JFrame {
             .addGroup(layout.createSequentialGroup()
                 .addGap(0, 0, 0)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
-                    .addComponent(jScrollPane3, javax.swing.GroupLayout.PREFERRED_SIZE, 0, Short.MAX_VALUE)
+                    .addComponent(jScrollPane3, javax.swing.GroupLayout.DEFAULT_SIZE, 362, Short.MAX_VALUE)
                     .addComponent(jScrollPane8, javax.swing.GroupLayout.PREFERRED_SIZE, 0, Short.MAX_VALUE)
-                    .addGroup(javax.swing.GroupLayout.Alignment.LEADING, layout.createSequentialGroup()
-                        .addComponent(jPanel4, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addGap(0, 0, Short.MAX_VALUE)))
+                    .addComponent(jPanel4, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addGap(0, 0, 0)
-                .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 118, Short.MAX_VALUE))
+                .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 197, Short.MAX_VALUE))
         );
 
-        setSize(new java.awt.Dimension(849, 438));
+        setSize(new java.awt.Dimension(1099, 589));
         setLocationRelativeTo(null);
     }// </editor-fold>//GEN-END:initComponents
 
@@ -375,20 +371,24 @@ public class RESTGui extends JFrame {
         try {
 
             int index = jTable1.getSelectedRow();
+//    private String room,adiServ,resDate,availDate;
 
-            amount = new Integer(modeljTable1.getValueAt(index, 4).toString());
-            price = new Double(modeljTable1.getValueAt(index, 2).toString());
-            ticket = modeljTable1.getValueAt(index, 1).toString();
-            int available = new Integer(modeljTable1.getValueAt(index, 3).toString());
+
+            amount = new Integer(modeljTable1.getValueAt(index, 7).toString());
+            price = new Double(modeljTable1.getValueAt(index, 3).toString());
+            room = modeljTable1.getValueAt(index, 1).toString();
+            resDate = modeljTable1.getValueAt(index, 6).toString();
+            int available = new Integer(modeljTable1.getValueAt(index, 4).toString());
             boolean isInt = isNumber(amount + "");
+            
             
             if (amount > 0 && isInt == true && amount <= available) {
                 available -= amount;
-                modeljTable1.setValueAt(available, index, 3);
+                modeljTable1.setValueAt(available, index, 4);
                 boolean match = false;
                
                 for(int i = 0; i < modeljTable3.getRowCount();i++ ){
-                      if(ticket.equals(modeljTable3.getValueAt(i, 0).toString())){
+                      if(room.equals(modeljTable3.getValueAt(i, 0).toString())){
                           match = true;
                           
                              int tempamount = 
@@ -397,25 +397,23 @@ public class RESTGui extends JFrame {
                     modeljTable3.setValueAt(tempamount,i, 2);
                     modeljTable3.setValueAt(tempprice,i, 1);
                   System.err.println("\n************************************************************");
-                  System.err.println("::" + amount + " Ticket/s of " + ticket + " updated in Cart::");
+                  System.err.println("::" + amount + " Ticket/s of " + room + " updated in Cart::");
                        break;
                       }
                 }
                 
             
                 if(match == false){
-                price = new Double(modeljTable1.getValueAt(index, 2).toString()) * amount;
-                modeljTable3.addRow(new String[]{ticket, price + "", amount + "", userMe});
+                price = new Double(modeljTable1.getValueAt(index, 3).toString()) * amount;
+                modeljTable3.addRow(new String[]{room, price + "", amount + "",resDate, userMe});
                 System.err.println("\n************************************************************");
-                System.err.println("::" + amount + " Ticket/s of " + ticket + " added to Cart::");
+                System.err.println("::" + amount + " Ticket/s of " + room + " added to Cart::");
                 }
                
                 }
              
-            
-            
-
         } catch (Exception e) {
+            System.out.println(e.toString());
         }
         changeCursor(Cursor.DEFAULT_CURSOR);
     }//GEN-LAST:event_jButton11ActionPerformed
@@ -428,21 +426,21 @@ public class RESTGui extends JFrame {
         try {
 
             int index = jTable3.getSelectedRow();
-            ticket = jTable3.getValueAt(index, 0).toString();
+            room = jTable3.getValueAt(index, 0).toString();
             amount = new Integer(jTable3.getValueAt(index, 2).toString());
             modeljTable3.removeRow(index);
 
             for (int i = 0; i < jTable1.getRowCount() + 1; i++) {
                 String tempTicket = modeljTable1.getValueAt(i, 1).toString();
-                if (tempTicket.equals(ticket)) {
-                    int regainedAmount = new Integer(modeljTable1.getValueAt(i, 3).toString()) + amount;
-                    modeljTable1.setValueAt(regainedAmount, i, 3);
+                if (tempTicket.equals(room)) {
+                    int regainedAmount = new Integer(modeljTable1.getValueAt(i, 4).toString()) + amount;
+                    modeljTable1.setValueAt(regainedAmount, i, 4);
                 }
 
             }
 
             System.err.println("\n************************************************************");
-            System.err.println("::Ticket" + ticket + " removed from Cart::");
+            System.err.println("::Ticket" + room + " removed from Cart::");
         } catch (Exception e) {
         }
 
@@ -500,22 +498,26 @@ public class RESTGui extends JFrame {
         changeCursor(Cursor.WAIT_CURSOR);
         int rows = modeljTable3.getRowCount();
            System.out.println(rows);
+           
          for(int i = 0; i < rows; i++){
-             ticket = modeljTable3.getValueAt(i,0).toString();
+             room = modeljTable3.getValueAt(i,0).toString();
              price  = new Double(modeljTable3.getValueAt(i, 1).toString());
              amount = new Integer(modeljTable3.getValueAt(i, 2).toString());
-              
-             orders.add(new Order(ticket, userMe, amount, price));
+             resDate =  modeljTable3.getValueAt(i, 3).toString();
+             orders.add(new Order(room, userMe, amount, price,resDate));
          }
          ResponseForOrder ="";
          String orderStatus = "";
          for(int i = 0; i< orders.size(); i++){
              
-             ticket = orders.get(i).getTicket();
+             room = orders.get(i).getRoom();
              amount = orders.get(i).getAmount();
              price = orders.get(i).getCoast();
-             ResponseForOrder +="\n::Order for Ticket "+ticket +" "+amount+" in amount";
-            orderStatus = rest.orderTicket(ticket, amount, price, userMe);
+             
+             ResponseForOrder +="\n::Order for Ticket "+room +" "+amount+" in amount";
+ 
+
+            orderStatus = rest.orderRoom(room, amount, price, userMe,resDate);
             if("false".equals(orderStatus)){
                 ResponseForOrder+=":-Not enough tickets to satisfy your oder";
             }
@@ -544,19 +546,21 @@ public class RESTGui extends JFrame {
         if(evt.getKeyCode() == KeyEvent.VK_ENTER){
               int index  = jTable1.getSelectedRow();
 
-            amount = new Integer(modeljTable1.getValueAt(index, 4).toString());
-            price = new Double(modeljTable1.getValueAt(index, 2).toString());
-            ticket = modeljTable1.getValueAt(index, 1).toString();
-            int available = new Integer(modeljTable1.getValueAt(index, 3).toString());
+      amount = new Integer(modeljTable1.getValueAt(index, 7).toString());
+
+            price = new Double(modeljTable1.getValueAt(index, 3).toString());
+            room = modeljTable1.getValueAt(index, 1).toString();
+            int available = new Integer(modeljTable1.getValueAt(index, 4).toString());
+            System.out.println(available+"********AVI********");
             boolean isInt = isNumber(amount + "");
             
             if (amount > 0 && isInt == true && amount <= available) {
                 available -= amount;
-                modeljTable1.setValueAt(available, index, 3);
+                modeljTable1.setValueAt(available, index, 4);
                 boolean match = false;
                
                 for(int i = 0; i < modeljTable3.getRowCount();i++ ){
-                      if(ticket.equals(modeljTable3.getValueAt(i, 0).toString())){
+                      if(room.equals(modeljTable3.getValueAt(i, 0).toString())){
                           match = true;
                           
                              int tempamount = 
@@ -565,23 +569,24 @@ public class RESTGui extends JFrame {
                     modeljTable3.setValueAt(tempamount,i, 2);
                     modeljTable3.setValueAt(tempprice,i, 1);
                   System.err.println("\n************************************************************");
-                  System.err.println("::" + amount + " Ticket/s of " + ticket + " updated in Cart::");
+                  System.err.println("::" + amount + " Ticket/s of " + room + " updated in Cart::");
                        break;
                       }
                 }
                 
             
                 if(match == false){
-                price = new Double(modeljTable1.getValueAt(index, 2).toString()) * amount;
-                modeljTable3.addRow(new String[]{ticket, price + "", amount + "", userMe});
+                price = new Double(modeljTable1.getValueAt(index, 3).toString()) * amount;
+                modeljTable3.addRow(new String[]{room, price + "", amount + "", userMe});
                 System.err.println("\n************************************************************");
-                System.err.println("::" + amount + " Ticket/s of " + ticket + " added to Cart::");
+                System.err.println("::" + amount + " Ticket/s of " + room + " added to Cart::");
                 }
                
                 }
      
              }
           } catch (Exception e) {
+              System.out.println(e.toString());
         }
             changeCursor(Cursor.DEFAULT_CURSOR);
     }//GEN-LAST:event_jTable1KeyReleased
@@ -591,6 +596,10 @@ public class RESTGui extends JFrame {
         refresh();
         changeCursor(Cursor.DEFAULT_CURSOR);
     }//GEN-LAST:event_jButton5ActionPerformed
+
+    private void jTable1MouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jTable1MouseClicked
+         
+    }//GEN-LAST:event_jTable1MouseClicked
 
     /**
      * @param args the command line arguments

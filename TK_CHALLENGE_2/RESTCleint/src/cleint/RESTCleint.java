@@ -10,7 +10,7 @@ import javax.ws.rs.client.WebTarget;
 import javax.ws.rs.core.GenericType;
 import javax.ws.rs.core.MediaType;
 
-import models.Ticket;
+import models.Room;
 
 /**
  *
@@ -30,12 +30,12 @@ public class RESTCleint {
 
     }
 
-    public List<Ticket> getTicketsList() {
+    public List<Room> getTicketsList() {
         System.out.println("<<::Requesting<< List of availablable Tickets from RESTful Ticket Services....");
-        List<Ticket> response
+        List<Room> response
                 = target.path("getAllTickets").
                 request(MediaType.APPLICATION_JSON).
-                get(new GenericType<List<Ticket>>() {
+                get(new GenericType<List<Room>>() {
                 });
         System.out.println(">>::Recieved<< List of availablable Tickets from RESTful Ticket Services....::");
         return response;
@@ -52,7 +52,7 @@ public class RESTCleint {
 
     }
 
-    public boolean checkTicketById(Ticket ticket) {
+    public boolean checkTicketById(Room ticket) {
 
         boolean response
                 = target.path("getTickets/{ticketId}/" + ticket).
@@ -85,11 +85,11 @@ public class RESTCleint {
         System.out.println(">>::Recieved<< User's Full Name from RESTful Ticket Services....::");
         return response;
     }
-  public String orderTicket( String ticket,  int amount,double coast,  String user) {
-      
-        System.out.println("<<::Requesting<<  orderTicket " + ticket + "  by RESTful Ticket Services....");
+  public String orderRoom( String room,  int amount,double coast,  String user,String resdate) {
+ 
+        System.out.println("<<::Requesting<<  orderTicket " + room + "  by RESTful Ticket Services....");
         String response
-                = target.path("order/"+ticket+"/"+amount+"/"+coast+"/"+user).
+                = target.path("order/"+room+"/"+amount+"/"+coast+"/"+user+"/"+resdate).
                 request(MediaType.APPLICATION_JSON).
                 get(String.class);
         System.out.println(">>::Recieved<< Response successfully by RESTful Ticket Services....::");

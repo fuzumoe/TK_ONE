@@ -7,7 +7,7 @@ import javax.jws.WebResult;
 import javax.jws.WebService;
 import javax.jws.soap.SOAPBinding;
 import javax.jws.soap.SOAPBinding.Style;
-import models.Ticket;
+import models.Room;
  
 
 /**
@@ -23,7 +23,7 @@ public interface SOAPService {
     public String sayHello(@WebParam(name = "name",partName ="name") String name);
  
     @WebMethod(operationName = "getTickets")
-    public Ticket[] getAllTickets();
+    public Room[] getAllRooms();
     
     @WebMethod(operationName = "checkAvailablity")
     public boolean checTicket(@WebParam(name = "ticketId")
@@ -64,8 +64,10 @@ public interface SOAPService {
             @WebParam(name = "password") String password) ;
     
     
-      public boolean orderTicket(  @WebParam(name ="ticket") String ticket, 
+      public boolean orderRoom(  @WebParam(name ="room") String room, 
                                    @WebParam(name ="amount") int amount,
                                    @WebParam(name ="coast")double coast,
-                                   @WebParam(name ="user") String user) ;
+                                   @WebParam(name ="user") String user,
+                                   @WebParam(name ="resdate")  String resdate);
+      
 }
