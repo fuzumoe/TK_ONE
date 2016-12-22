@@ -70,6 +70,7 @@ public class ChatWindow extends javax.swing.JFrame {
     }
 
     public ChatWindow(String userNickName) throws JMSException, InterruptedException, NamingException {
+       
         this.userNickName = userNickName;
         this. topics = new ArrayList<>();
         this.model = new DefaultListModel<String>();
@@ -521,8 +522,7 @@ public class ChatWindow extends javax.swing.JFrame {
         java.awt.EventQueue.invokeLater(new Runnable() {
             public void run() {
                 try {
-                    ChatWindow window = new ChatWindow();
-                    window.setVisible(true);
+                       new ChatWindow("aDAM").setVisible(true);
 
                 } catch (JMSException ex) {
                     Logger.getLogger(ChatWindow.class.getName()).log(Level.SEVERE, null, ex);

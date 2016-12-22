@@ -170,19 +170,13 @@ public class LoginGui extends javax.swing.JFrame {
 
     private void jButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton1ActionPerformed
         this.usersNickName = nickName.getText().toString();
-        if(this.usersNickName == null || this.usersNickName == null || this.usersNickName == this.Nick_Name)
-            JOptionPane.showMessageDialog(this, "Please provide a valid nick name");
-        System.out.println(this.usersNickName);
         try {
             new ChatWindow(this.usersNickName).setVisible(true);
-            this.setVisible(false);
-        } catch (JMSException ex) {
-            Logger.getLogger(LoginGui.class.getName()).log(Level.SEVERE, null, ex);
-        } catch (InterruptedException ex) {
-            Logger.getLogger(LoginGui.class.getName()).log(Level.SEVERE, null, ex);
-        } catch (NamingException ex) {
+        } catch (JMSException | InterruptedException | NamingException ex) {
+            System.out.println(ex.toString());
             Logger.getLogger(LoginGui.class.getName()).log(Level.SEVERE, null, ex);
         }
+       
     }//GEN-LAST:event_jButton1ActionPerformed
 
     private void nickNameMouseExited(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_nickNameMouseExited
