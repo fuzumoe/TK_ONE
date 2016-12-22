@@ -14,7 +14,7 @@ public class ConnectionConstants {
 public static final String INITIAL_CONTEXT_FACTORY = "org.apache.activemq.jndi.ActiveMQInitialContextFactory";
 public static final String PROVIDER_URL = "tcp://localhost:61616";
 public static final String CONTEXT_FACTORY = "ConnectionFactory";
- 
+public static final String TOPIC = "TOPICS";
 
 
 }
